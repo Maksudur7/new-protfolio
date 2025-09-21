@@ -15,9 +15,9 @@ interface Feature {
 }
 
 const stats: Stat[] = [
-  { number: "50+", label: "Projects Completed" },
-  { number: "3+", label: "Years Experience" },
-  { number: "30+", label: "Happy Clients" },
+  { number: "10+", label: "Projects Completed" },
+  { number: "1/2+", label: "Years Experience" },
+  // { number: "30+", label: "Happy Clients" },
   { number: "24/7", label: "Support Available" }
 ];
 
@@ -29,10 +29,10 @@ const features: Feature[] = [
     color: "text-chart-1"
   },
   {
-    icon: Palette,
-    title: "UI/UX Design",
-    description: "Creating beautiful and intuitive user experiences",
-    color: "text-chart-2"
+    icon: Code, // তুমি চাইলে React Icons বা অন্য কোনো কোড/terminal আইকন ব্যবহার করতে পারো
+    title: "MERN Stack Development",
+    description: "Building full-stack web applications with MongoDB, Express.js, React.js, and Node.js",
+    color: "text-green-500" // Tailwind CSS color class, তুমি চাইলে পরিবর্তন করতে পারো
   },
   {
     icon: Zap,
@@ -63,26 +63,27 @@ export default function About() {
                 Crafting Digital Excellence
               </h2>
             </div>
-            
+
             <div className="space-y-4 text-muted-foreground leading-relaxed text-lg">
               <p>
-                I'm a passionate full-stack developer and UI/UX designer with a love for 
-                creating digital experiences that not only look stunning but also solve 
-                real-world problems. My journey in tech spans over 3 years, during which 
-                I've helped businesses transform their ideas into powerful digital solutions.
+                Hi, I’m Maksudur Rahaman (Mishu) — a passionate Web Developer who loves building modern and user-friendly applications. My journey started with a strong desire to prove myself through learning and hard work.
               </p>
               <p>
-                From responsive web applications to complex backend systems, I believe in 
-                writing clean, maintainable code while never compromising on user experience. 
-                Every project is an opportunity to learn something new and push the boundaries 
-                of what's possible.
+                I have successfully completed Level-1 course from Programming Hero, where I gained practical skills in HTML, CSS, JavaScript, React.js, Node.js, Express.js, and MongoDB. Along with these, I enjoy using Tailwind CSS, DaisyUI, and other modern libraries to create clean, scalable, and impactful projects.
+              </p>
+              <p>
+                One of my key projects is searplate.com, a food-distribution platform built with MERN stack, where users can request food, donate, and give feedback. It also includes an AI-powered feedback system for better user experience.
+
+              </p>
+              <p>
+                For me, programming is not just coding — it’s about solving problems, connecting people, and creating meaningful solutions.
               </p>
             </div>
-            
+
             <div className="pt-4">
               <h3 className="text-xl font-semibold mb-4">Technologies I Love</h3>
               <div className="flex flex-wrap gap-2">
-                {["React", "Next.js", "TypeScript", "Node.js", "Python", "PostgreSQL", "Figma", "Tailwind CSS"].map((tech, index) => (
+                {["JavaScript (ES6)", "React.js", "Node.js", "Express.js", "Tailwind CSS", "Daish UI", "MongoDB", "REST API", "JSON", "Netlify", "Vercel"].map((tech, index) => (
                   <Badge key={index} variant="secondary" className="px-3 py-1">
                     {tech}
                   </Badge>
@@ -90,20 +91,18 @@ export default function About() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-center">
             <div className="relative">
               <div className="w-80 h-80 bg-gradient-to-br from-primary/20 to-chart-2/20 rounded-2xl flex items-center justify-center shadow-2xl">
-                <div className="w-64 h-64 bg-gradient-to-br from-primary to-chart-2 rounded-xl flex items-center justify-center text-white text-6xl font-bold shadow-xl">
-                  MR
-                </div>
+                <img className="w-64 h-64 border-blue-400 border to-chart-2 rounded-xl flex items-center justify-center text-white text-6xl font-bold shadow-xl" src="https://i.ibb.co/BVDnCdBY/your-image-name.jpg" alt="Portfolio image" />
               </div>
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-chart-3/20 rounded-full blur-xl" />
               <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-chart-4/20 rounded-full blur-xl" />
             </div>
           </div>
         </div>
-        
+
         {/* Stats section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
           {stats.map((stat, index) => (
@@ -115,7 +114,7 @@ export default function About() {
             </Card>
           ))}
         </div>
-        
+
         {/* Features grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => {
