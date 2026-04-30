@@ -1,139 +1,213 @@
-import { Card, CardContent } from "@/components/ui/card.tsx";
+import { useState } from "react";
+import { Briefcase, MapPin, Calendar, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge.tsx";
-import { Calendar, MapPin, Briefcase } from "lucide-react";
 
 interface ExperienceItem {
+  id: number;
   title: string;
   company: string;
   period: string;
   location: string;
   description: string;
   skills: string[];
-  color: string;
+  icon: string;
 }
 
 const experiences: ExperienceItem[] = [
   {
-    title: "MERN Stack Developer",
-    company: "Airpro Private Solution Ltd.",
-    period: "6 months",
-    location: "India",
-    description: "Developed full-stack web applications using MERN Stack (MySql, Express.js, React.js, Node.js) . Implemented responsive UI/UX with Tailwind CSS & DaisyUI",
-    skills: ["React", "Node.js", "Express.js", "MySql", "Daisy UI"],
-    color: "bg-chart-1"
+    id: 1,
+    icon: "💼",
+    title: "Frontend Developer",
+    company: "DALONEXT",
+    period: "Mar 2026 - Present",
+    location: "Bangladesh · Remote",
+    description: "Building responsive, production-ready interfaces using React.js, Next.js, and Tailwind CSS while collaborating with backend teams.",
+    skills: ["Next.js", "React.js", "TypeScript", "Tailwind CSS", "Responsive UI"],
   },
   {
-    title: "programming Hero Corse Intern",
-    company: "Programming Hero",
-    period: "2 months",
-    location: "Online",
-    description: "Completed Level-1 course and built practical web projects . Gained hands-on experience in frontend & backend development . Focused on creating clean, functional, and scalable code",
-    skills: ["HTML", "CSS", "JavaScript", "Node.js", "MongoDB", "Express.js"],
-    color: "bg-chart-2"
+    id: 2,
+    icon: "🔐",
+    title: "Backend Developer (Contractual)",
+    company: "Gurdia-Auth Project",
+    period: "Oct 2024 - Nov 2024",
+    location: "Remote",
+    description: "Designed a secure authentication platform with Better-Auth, Prisma ORM, PostgreSQL, and RBAC for enterprise access control.",
+    skills: ["Better-Auth", "Prisma", "PostgreSQL", "RBAC", "JWT"],
   },
   {
-    title: "Student Hub (Recent Project)",
-    company: "P-Hero Context",
-    period: "10 days",
-    location: "Online",
-    description: "Developed Student Hub, a web platform for students . Added features for user authentication, content management, and feedback system . Designed intuitive UI/UX for seamless user experience",
-    skills: ["React.js", "Node.js", "Express.js", "MongoDB", "Tailwind CSS", "Framworks"],
-    color: "bg-chart-3"
-  }
+    id: 3,
+    icon: "🌍",
+    title: "MERN Stack Developer (Intern)",
+    company: "Airepro Solution Pvt Ltd",
+    period: "Apr 2024 - Aug 2024",
+    location: "India · Remote",
+    description: "Developed reusable UI components with Tailwind CSS, optimized API integration logic, and improved UX with React Query.",
+    skills: ["React.js", "Node.js", "Express.js", "React Query", "Tailwind CSS"],
+  },
+  {
+    id: 4,
+    icon: "🏫",
+    title: "Industrial Attachment",
+    company: "EPD IT Solutions",
+    period: "6 Months",
+    location: "Barishal",
+    description: "Supported full-stack development workflows by building responsive layouts, integrating backend APIs, and applying debugging best practices.",
+    skills: ["HTML", "CSS", "JavaScript", "API Integration", "Debugging"],
+  },
 ];
 
 export default function Experience() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(experiences.length / itemsPerPage);
+  
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentExperiences = experiences.slice(startIndex, endIndex);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
-    <section id="experience" className="py-20 px-4">
-      <div className="max-w-6xl mx-auto">
+    <section 
+      id="experience" 
+      className="min-h-screen text-foreground font-sans px-6 py-20 flex flex-col items-center relative overflow-hidden -mt-[1px]"
+    >
+      {/* Gradient blend overlay - seamless transition */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none z-20" />
+      
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-32 right-20 w-48 h-48 bg-purple-600/15 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-32 left-20 w-32 h-32 bg-fuchsia-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
+
+      <div className="relative z-10 max-w-6xl w-full">
+
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4">
-            My Journey
-          </Badge>
-          <h2 className="text-4xl font-bold tracking-tight mb-4">Work Experience</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A timeline of my professional journey, showcasing growth and expertise in web development
+        <div className="mb-10 space-y-4">
+          <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card/80 px-4 text-sm text-foreground shadow-sm">
+            <Briefcase className="w-4 h-4 text-primary" />
+            <span>My Professional Journey</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-semibold text-slate-950 dark:text-white tracking-tight">
+            Work Experience
+          </h2>
+          <p className="text-slate-600 max-w-2xl text-lg dark:text-gray-300">
+            A showcase of my professional growth, roles, and the impact I've created through various projects and positions.
           </p>
         </div>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Main vertical line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-cyan-400 to-emerald-400 transform -translate-x-1/2" />
-
-          <div className="space-y-20">
-            {experiences.map((exp, index) => (
-              <div
-                key={index}
-                className={`relative flex md:items-center ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                  }`}
-              >
-                {/* Timeline dot */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 z-20">
-                  <div className="w-5 h-5 rounded-full border-4 border-white shadow-md bg-primary" />
+        {/* Experience Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          {currentExperiences.map((exp) => (
+            <div 
+              key={exp.id}
+              className="group relative p-6 rounded-2xl bg-card/95 border border-border shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(124,58,237,0.12)] overflow-hidden flex flex-col"
+            >
+              {/* Hover glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/0 via-transparent to-transparent group-hover:from-purple-600/10 transition-all duration-300 pointer-events-none" />
+              
+              <div className="relative z-10 space-y-3 flex flex-col h-full">
+                {/* Icon & Title Section */}
+                <div className="flex items-start gap-3">
+                  <div className="text-3xl min-w-fit">{exp.icon}</div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-slate-950 mb-0.5 dark:text-white">
+                      {exp.title}
+                    </h3>
+                    <p className="text-purple-600 font-medium text-xs dark:text-purple-300">
+                      {exp.company}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Connector line */}
-                <div
-                  className={`hidden md:block absolute top-1/2 w-1/8 h-0.5 bg-gray-300 z-10 ${index % 2 === 0 ? "right-1/2" : "left-1/2"
-                    }`}
-                />
-
-                {/* Content card */}
-                <div
-                  className={`w-full md:w-5/12 mt-10 md:mt-0 ${index % 2 === 0 ? "md:mr-auto md:pr-12" : "md:ml-auto md:pl-12"
-                    }`}
-                >
-                  <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105 border border-gray-200">
-                    <CardContent className="p-6 space-y-4">
-                      {/* Title & Company */}
-                      <div className="space-y-1">
-                        <h3 className="text-xl font-bold">{exp.title}</h3>
-                        <div className="flex items-center gap-2 text-primary font-semibold">
-                          <Briefcase className="w-4 h-4" />
-                          {exp.company}
-                        </div>
-                      </div>
-
-                      {/* Time & Location */}
-                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {exp.period}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4" />
-                          {exp.location}
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      <p className="text-muted-foreground leading-relaxed">
-                        {exp.description}
-                      </p>
-
-                      {/* Skills */}
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {exp.skills.map((skill, skillIndex) => (
-                          <Badge
-                            key={skillIndex}
-                            variant="secondary"
-                            className="text-xs px-2 py-1"
-                          >
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                {/* Meta Info */}
+                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground pb-3 border-b border-border">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3 text-purple-400" />
+                    <span>{exp.period}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-purple-400" />
+                    <span>{exp.location}</span>
+                  </div>
                 </div>
+
+                {/* Description */}
+                <p className="text-slate-700 leading-relaxed text-xs dark:text-slate-300">
+                  {exp.description}
+                </p>
+
+                {/* Skills */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {exp.skills.map((skill, idx) => (
+                    <Badge
+                      key={idx}
+                      variant="secondary"
+                      className="px-2 py-0.5 text-xs text-foreground bg-muted/70 border border-border hover:bg-primary/10 transition-colors"
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Learn More Link */}
+                <button className="mt-auto inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-accent transition-colors group/btn pt-2">
+                  View Details
+                  <ArrowUpRight className="w-3 h-3 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                </button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-end gap-4 mt-12">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/80 text-foreground hover:bg-accent/10 hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-10 h-10 rounded-lg font-medium transition-all duration-300 ${
+                    currentPage === page
+                      ? "bg-primary text-primary-foreground border border-primary"
+                      : "border border-border bg-muted/80 text-foreground hover:bg-accent/10 hover:text-foreground"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-muted/80 text-foreground hover:bg-accent/10 hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              Next
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
-
 }

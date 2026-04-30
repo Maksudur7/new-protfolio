@@ -1,209 +1,514 @@
-import { Card, CardContent } from "@/components/ui/card.tsx";
+import { useState } from "react";
+import {
+  Calendar,
+  Code,
+  ExternalLink,
+  Eye,
+  Github,
+  Star,
+  Users,
+  Zap,
+} from "lucide-react";
+
 import { Badge } from "@/components/ui/badge.tsx";
-import { ExternalLink, Github, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button.tsx";
 
-interface Project {
+interface ProjectItem {
+  id: number;
   title: string;
   description: string;
   technologies: string[];
   liveUrl?: string;
   githubUrl?: string;
-  featured?: boolean;
-  image?: string;
   category: string;
   imageLink: string;
+  featured: boolean;
+  stats?: {
+    stars?: number;
+    users?: number;
+    completion?: number;
+  };
+  featuredOrder?: number;
 }
-const projects: Project[] = [
+
+const projects: ProjectItem[] = [
   {
-    title: "Student Hub",
-    imageLink: "https://i.ibb.co.com/nq8rnJmr/studenthub.png",
-    description: "Developed Student Hub, a web platform for students . Added features for user authentication, content management, and feedback system . Designed intuitive UI/UX for seamless user experience",
-    technologies: ["React,js", "Node.js", "Express.js", "MongoDB", "Tailwind CSS", "Framworks"],
+    id: 1,
+    title: "NGV - Video Streaming Platform",
+    description:
+      "A modern, fully dynamic video streaming platform with 11+ responsive pages, advanced filtering, and a comprehensive admin dashboard. Features high-performance media listing, user watch history, and rental/subscription flows.",
+    technologies: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS",
+      "Better Auth",
+      "Radix UI",
+    ],
+    liveUrl: "https://ngv-black.vercel.app",
+    githubUrl: "https://github.com/Maksudur7/assinment5",
+    category: "Full-Stack App",
+    imageLink: "https://i.ibb.co.com/6JV74646/ngv.png",
+    featured: true,
+    featuredOrder: 1,
+    stats: {
+      stars: 45,
+      users: 120,
+      completion: 85,
+    },
+  },
+  {
+    id: 2,
+    title: "Student Hub Platform",
+    description:
+      "A comprehensive web platform for students featuring user authentication, content management, and feedback systems. Built with modern MERN stack technologies for seamless user experience and scalable architecture.",
+    technologies: [
+      "React.js",
+      "Node.js",
+      "Express.js",
+      "MongoDB",
+      "Tailwind CSS",
+    ],
     liveUrl: "https://studyhub-f26cc.web.app",
     githubUrl: "https://github.com/Maksudur7/Study-Hub",
+    category: "Full-Stack Web App",
+    imageLink: "https://i.ibb.co.com/nq8rnJmr/studenthub.png",
     featured: true,
-    category: "Web App"
+    featuredOrder: 1,
+    stats: {
+      stars: 24,
+      users: 150,
+      completion: 100,
+    },
   },
-  // {
-  //   title: "Task Management Pro",
-  //   description: "A collaborative project management tool with drag-and-drop functionality, team chat, and advanced reporting features.",
-  //   technologies: ["Next.js", "Prisma", "tRPC", "Tailwind CSS"],
-  //   liveUrl: "#",
-  //   githubUrl: "#",
-  //   featured: true,
-  //   category: "SaaS"
-  // },
-  // {
-  //   title: "Weather Analytics",
-  //   description: "Beautiful weather application with detailed forecasts, historical data visualization, and location-based insights.",
-  //   technologies: ["Vue.js", "Chart.js", "Express", "OpenWeather API"],
-  //   liveUrl: "#",
-  //   githubUrl: "#",
-  //   category: "Web App"
-  // },
-  // {
-  //   title: "Portfolio CMS",
-  //   description: "A headless CMS specifically designed for creative portfolios with drag-and-drop page builder and SEO optimization.",
-  //   technologies: ["Nuxt.js", "Strapi", "GraphQL", "Cloudinary"],
-  //   liveUrl: "#",
-  //   githubUrl: "#",
-  //   category: "CMS"
-  // },
-  // {
-  //   title: "Fitness Tracker",
-  //   description: "Mobile-responsive fitness application with workout planning, progress tracking, and social features.",
-  //   technologies: ["React Native", "Firebase", "Redux", "Chart.js"],
-  //   liveUrl: "#",
-  //   githubUrl: "#",
-  //   category: "Mobile"
-  // },
-  // {
-  //   title: "Design System",
-  //   description: "Comprehensive design system with React components, documentation, and design tokens for consistent UI development.",
-  //   technologies: ["Storybook", "React", "SCSS", "Figma"],
-  //   liveUrl: "#",
-  //   githubUrl: "#",
-  //   category: "Design System"
-  // }
+  {
+    id: 3,
+    title: "MediStore - Premium Online Pharmacy",
+    description:
+      "A sophisticated healthcare e-commerce platform built with Next.js 15. Features a premium dark-themed UI, real-time cart management, and a multi-step checkout process. Optimized for lightning-fast medicine browsing and secure OTC purchases.",
+    technologies: [
+      "Next.js 15",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Context API",
+    ],
+    liveUrl: "https://medistore-woad.vercel.app",
+    githubUrl: "https://github.com/Maksudur7/MediStore-Frontend",
+    category: "E-Commerce",
+    imageLink: "https://i.ibb.co.com/k2B4h3Y6/madistore.png",
+    featured: false,
+    featuredOrder: 3,
+    stats: {
+      stars: 12,
+      users: 50,
+      completion: 100,
+    },
+  },
+  {
+    id: 4,
+    title: "ConnectMe VPN - Reseller Panel",
+    description:
+      "A professional VPN management and reseller platform. It provides real-time user management, bandwidth monitoring, and a seamless dashboard for administrators and sub-resellers to manage connections efficiently.",
+    technologies: ["Node.js", "Express.js", "React", "MongoDB", "REST API"],
+    liveUrl: "https://reseller.cntbdvpn.win",
+    githubUrl: "https://github.com/Maksudur7",
+    category: "Admin Panel",
+    imageLink: "https://i.ibb.co.com/tp4nhNbj/connect-me.png",
+    featured: false,
+    stats: {
+      stars: 15,
+      users: 450,
+      completion: 100,
+    },
+  },
+  {
+    id: 5,
+    title: "WeatherWise Analytics",
+    description:
+      "Advanced weather application with detailed forecasts, historical data visualization, and location-based insights with beautiful data representations.",
+    technologies: ["Vue.js", "D3.js", "Express", "OpenWeather API"],
+    liveUrl: "#",
+    githubUrl: "#",
+    category: "Data Visualization",
+    imageLink: "/api/placeholder/600/400",
+    featured: false,
+    stats: {
+      stars: 8,
+      users: 120,
+      completion: 92,
+    },
+  },
 ];
 
 export default function Projects() {
-  const featuredProjects = projects.filter(p => p.featured);
-  const otherProjects = projects.filter(p => !p.featured);
+  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
+  const [projectPage, setProjectPage] = useState(1);
+  const featuredProjects = projects
+    .filter((p) => p.featured)
+    .sort((a, b) => (a.featuredOrder || 0) - (b.featuredOrder || 0));
+  const otherProjects = projects.filter((p) => !p.featured);
+  const projectsPerPage = 2;
+  const totalProjectPages = Math.max(
+    1,
+    Math.ceil(otherProjects.length / projectsPerPage),
+  );
+  const pagedProjects = otherProjects.slice(
+    (projectPage - 1) * projectsPerPage,
+    projectPage * projectsPerPage,
+  );
+
+  const handleProjectPrev = () =>
+    setProjectPage((page) => Math.max(1, page - 1));
+  const handleProjectNext = () =>
+    setProjectPage((page) => Math.min(totalProjectPages, page + 1));
 
   return (
-    <section id="projects" className="py-20 px-4 bg-gradient-to-br from-muted/20 to-background">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4">
-            My Work
-          </Badge>
-          <h2 className="text-4xl font-bold tracking-tight mb-4">Featured Projects</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            A showcase of my recent work, featuring web applications, mobile apps, and design systems
+    <section
+      id="projects"
+      className="py-20 px-4 text-foreground font-sans relative overflow-hidden -mt-[1px]"
+    >
+      {/* Gradient blend overlay - seamless transition */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-b from-purple-500/5 to-transparent pointer-events-none z-20" />
+
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.12),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(96,165,250,0.08),transparent_50%)]" />
+      <div className="absolute top-20 right-20 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 left-20 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Section Header */}
+        <div className="text-start mb-8">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            Featured Projects
+          </h2>
+          <p className="text-muted-foreground max-w-3xl text-lg leading-relaxed">
+            A polished portfolio of my top projects built with a refined dark
+            and white visual system.
           </p>
         </div>
 
-        {/* Featured Projects */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        {/* Featured Projects - Hero Layout */}
+        <div className="space-y-20 mb-10">
           {featuredProjects.map((project, index) => (
-            <Card key={index} className="group hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] overflow-hidden border-2 border-primary/20">
-              <div className="relative">
-                <div className="h-48 bg-gradient-to-br from-primary/20 via-chart-2/20 to-chart-3/20 flex items-center justify-center">
-                  {/* <div className="text-6xl text-primary/40 font-bold"> */}
-                  <img className=" pt-1.5 " src={project.imageLink} alt="" />
-                  {/* </div> */}
-                </div>
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-primary/90 text-primary-foreground">
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    Featured
-                  </Badge>
-                </div>
-                <div className="absolute top-4 left-4">
-                  <Badge variant="secondary" className="text-xs">
-                    {project.category}
-                  </Badge>
-                </div>
-              </div>
+            <div
+              key={project.id}
+              className={`relative flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} items-center gap-8`}
+            >
+              {/* Project Content */}
+              <div className={`w-full lg:w-1/2  `}>
+                {/* Project Header */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-purple-600/90 text-white border-0 px-3 py-1 text-xs">
+                      <Zap className="w-3 h-3 mr-1" />
+                      {project.category}
+                    </Badge>
+                    {project.stats && (
+                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                        {project.stats.stars && (
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 text-yellow-400" />
+                            <span>{project.stats.stars}</span>
+                          </div>
+                        )}
+                        {project.stats.users && (
+                          <div className="flex items-center gap-1">
+                            <Users className="w-4 h-4 text-blue-400" />
+                            <span>{project.stats.users}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">
+                  <h3 className="text-2xl md:text-3xl font-bold text-foreground leading-tight">
                     {project.title}
                   </h3>
-                  <p className="text-muted-foreground leading-relaxed">
+
+                  <p className="text-muted-foreground text-lg leading-relaxed">
                     {project.description}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech, techIndex) => (
-                    <Badge key={techIndex} variant="outline" className="text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
+                {/* Tech Stack */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-semibold text-purple-400 uppercase tracking-wider">
+                    Technologies Used
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech, idx) => (
+                      <Badge
+                        key={idx}
+                        variant="secondary"
+                        className="px-4 py-2 text-sm text-foreground bg-muted/70 border border-border hover:bg-primary/10 transition-all duration-300 hover:scale-105"
+                      >
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                {/* Progress Bar */}
+                {project.stats?.completion && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm text-gray-400">
+                      <span>Project Completion</span>
+                      <span>{project.stats.completion}%</span>
+                    </div>
+                    <div className="w-full bg-muted/50 rounded-full h-2">
+                      <div
+                        className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-1000"
+                        style={{ width: `${project.stats.completion}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-3">
                   {project.liveUrl && (
-                    <a className="flex-1 group/btn" href={project.liveUrl}>
-                      <Button className="w-full" >
-                        <ExternalLink className="w-4 h-4 mr-2 group-hover/btn:rotate-45 transition-transform" />
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg hover:shadow-purple-500/25 transition-all duration-300 text-sm">
+                        <Eye className="w-5 h-5 mr-2" />
                         Live Demo
                       </Button>
                     </a>
                   )}
                   {project.githubUrl && (
-                    <a className="flex-1" href={project.githubUrl}>
-                      <Button variant="outline" className="w-full" >
-                        <Github className="w-4 h-4 mr-2" />
-                        Source Code
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button
+                        variant="outline"
+                        className="px-6 py-2 border-white/20 hover:bg-white/10 hover:border-purple-400/50 transition-all duration-300 text-sm text-foreground"
+                      >
+                        <Github className="w-5 h-5 mr-2 " />
+                        View Code
                       </Button>
                     </a>
                   )}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+
+              {/* Project Visual */}
+              <div className="w-full lg:w-1/2 relative group">
+                <div className="relative overflow-hidden rounded-3xl bg-card/80 border border-border shadow-2xl">
+                  {/* Image Container */}
+                  <div className="aspect-video relative overflow-hidden">
+                    {project.imageLink.startsWith("http") ? (
+                      <img
+                        src={project.imageLink}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+                        <div className="text-center text-white/50">
+                          <Code className="w-20 h-20 mx-auto mb-4 opacity-50" />
+                          <p className="text-lg font-semibold">
+                            {project.title}
+                          </p>
+                          <p className="text-sm text-white/30 mt-2">
+                            Project Preview
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Overlay on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                    {/* Floating Stats */}
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
+                      <div className="bg-card/95 backdrop-blur-sm rounded-lg p-3 text-foreground text-sm border border-border">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Star className="w-4 h-4 text-yellow-400" />
+                          <span>{project.stats?.stars || 0} stars</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-blue-400" />
+                          <span>{project.stats?.users || 0} users</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Stats Bar */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card/90 to-transparent p-4">
+                    <div className="flex justify-between items-center text-foreground">
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4 text-purple-400" />
+                          <span>2024</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Code className="w-4 h-4 text-blue-400" />
+                          <span>{project.technologies.length} tech</span>
+                        </div>
+                      </div>
+                      <Badge className="bg-primary/10 text-primary border-0">
+                        Featured
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Other Projects Grid */}
+        {/* Other Projects - Grid Layout */}
         <div className="space-y-8">
-          <h3 className="text-2xl font-bold text-center">More Projects</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherProjects.map((project, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:scale-105">
-                <div className="h-32 bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative">
-                  <div className="text-3xl text-muted-foreground/60 font-bold">
-                    {project.title.charAt(0)}
-                  </div>
-                  <Badge variant="secondary" className="absolute top-2 right-2 text-xs">
-                    {project.category}
-                  </Badge>
-                </div>
+          <div className="text-center">
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground">
+              More Projects
+            </h3>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Additional projects showcasing various technologies and
+              problem-solving approaches.
+            </p>
+          </div>
 
-                <CardContent className="p-4 space-y-3">
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-semibold group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                      {project.description}
-                    </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            {pagedProjects.map((project) => (
+              <div
+                key={project.id}
+                className="group relative bg-card/80 border border-border rounded-2xl p-4 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_0_40px_rgba(124,58,237,0.15)] overflow-hidden"
+                onMouseEnter={() => setHoveredProject(project.id)}
+                onMouseLeave={() => setHoveredProject(null)}
+              >
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/0 via-transparent to-transparent group-hover:from-purple-600/5 transition-all duration-500" />
+
+                <div className="relative z-10 space-y-3">
+                  {/* Project Header */}
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <Badge className="bg-blue-600/90 text-white border-0 text-[10px] uppercase tracking-[0.12em]">
+                        {project.category}
+                      </Badge>
+                      <h4 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h4>
+                    </div>
+                    <div className="text-3xl opacity-20 group-hover:opacity-40 transition-opacity">
+                      {project.category === "Productivity" ? "📋" : "📊"}
+                    </div>
                   </div>
 
+                  {/* Description */}
+                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                    {project.description}
+                  </p>
+
+                  {/* Tech Stack */}
                   <div className="flex flex-wrap gap-1">
-                    {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                      <Badge key={techIndex} variant="secondary" className="text-xs px-2 py-0.5">
+                    {project.technologies.slice(0, 3).map((tech, idx) => (
+                      <Badge
+                        key={idx}
+                        variant="secondary"
+                        className="px-2 py-1 text-xs text-foreground bg-muted/60 border border-border"
+                      >
                         {tech}
                       </Badge>
                     ))}
                     {project.technologies.length > 3 && (
-                      <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                      <Badge
+                        variant="secondary"
+                        className="px-2 py-1 text-xs text-foreground bg-muted/60 border border-border"
+                      >
                         +{project.technologies.length - 3}
                       </Badge>
                     )}
                   </div>
 
-                  <div className="flex gap-2 pt-2">
+                  {/* Stats */}
+                  {project.stats && (
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2 border-t border-border">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 text-yellow-400" />
+                        <span>{project.stats.stars}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3 text-blue-400" />
+                        <span>{project.stats.users}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                        <span>{project.stats.completion}%</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-3">
                     {project.liveUrl && (
-                      <Button size="sm" variant="outline" className="flex-1 text-xs">
-                        <ExternalLink className="w-3 h-3 mr-1" />
-                        Live
-                      </Button>
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                      >
+                        <Button
+                          size="sm"
+                          className="w-full bg-purple-600/80 hover:bg-purple-600 text-white border-0 text-xs"
+                        >
+                          <Eye className="w-3 h-3 mr-1" />
+                          Demo
+                        </Button>
+                      </a>
                     )}
                     {project.githubUrl && (
-                      <Button size="sm" variant="outline" className="flex-1 text-xs">
-                        <Github className="w-3 h-3 mr-1" />
-                        Code
-                      </Button>
+                      <a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1"
+                      >
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full border-white/20 text-foreground hover:bg-white/10 text-xs"
+                        >
+                          <Github className="w-3 h-3 mr-1" />
+                          Code
+                        </Button>
+                      </a>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
+          </div>
+
+          <div className="mt-8 flex flex-col gap-4 items-center justify-between sm:flex-row sm:gap-0">
+            <div className="text-sm text-gray-400">
+              Page {projectPage} of {totalProjectPages}
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                size="sm"
+                className="h-10 rounded-full border border-border bg-muted/80 text-foreground hover:bg-accent/10"
+                disabled={projectPage === 1}
+                onClick={handleProjectPrev}
+              >
+                Previous
+              </Button>
+              <Button
+                size="sm"
+                className="h-10 rounded-full border border-border bg-muted/80 text-foreground hover:bg-accent/10"
+                disabled={projectPage === totalProjectPages}
+                onClick={handleProjectNext}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </div>
       </div>

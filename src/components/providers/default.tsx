@@ -14,7 +14,7 @@ export function DefaultProviders({ children }: { children: React.ReactNode }) {
       <ConvexProviderWithAuth client={convex} useAuth={useAuth}>
         <QueryClientProvider>
           <TooltipProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
               <Toaster />
               {children}
             </ThemeProvider>

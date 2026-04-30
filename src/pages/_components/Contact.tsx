@@ -33,7 +33,8 @@ export default function Contact() {
         timerProgressBar: true,
       });
 
-      form.reset(); // ✅ now safe, event object independent
+      form.reset(); 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error:", error.text || error);
 
@@ -49,13 +50,16 @@ export default function Contact() {
 
   const contactInfo = [
     { icon: Mail, title: "Email", value: "maksudurrahamanmishu7@gmail.com", description: "Best way to reach me", color: "text-chart-1" },
-    { icon: Phone, title: "Phone", value: "+8801315906086", description: "Available during business hours", color: "text-chart-2" },
-    { icon: MapPin, title: "Location", value: "Barishal, Bangladesh", description: "Open to remote work", color: "text-chart-3" },
+    { icon: Phone, title: "Phone", value: "+8801880829496", description: "Available during business hours", color: "text-chart-2" },
+    { icon: MessageSquare, title: "Whats App", value: "8801315906086", description: "Available during business hours", color: "text-chart-3" },
     { icon: Clock, title: "Response Time", value: "Within 24 hours", description: "Usually much faster", color: "text-chart-4" }
   ];
 
   return (
-    <section id="contact" className="py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-chart-2/5">
+    <section id="contact" className="py-10 px-4 text-foreground relative overflow-hidden -mt-[1px]">
+      {/* Gradient blend overlay - seamless transition */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none z-20" />
+      
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4">Let's Connect</Badge>
@@ -70,7 +74,7 @@ export default function Contact() {
           <div className="space-y-8">
             <div className="space-y-6">
               <h3 className="text-2xl font-bold">Let's Start a Conversation</h3>
-              <p className="text-muted-foreground leading-relaxed text-lg">
+              <p className="text-gray-300 leading-relaxed text-lg">
                 I'm always excited to work on new projects and meet interesting people. Whether you have a specific project in mind or just want to say hello, don't hesitate to reach out.
               </p>
             </div>
@@ -80,15 +84,15 @@ export default function Contact() {
               {contactInfo.map((info, index) => {
                 const Icon = info.icon;
                 return (
-                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-primary">
+                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-primary bg-card">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <div className={`p-2 rounded-full bg-muted group-hover:bg-primary/10 transition-colors ${info.color}`}>
                           <Icon className="w-5 h-5" />
                         </div>
-                        <div className="space-y-1 flex-1">
+                        <div className="space-y-1 flex-1 text-foreground">
                           <h4 className="font-semibold text-sm">{info.title}</h4>
-                          <p className="font-medium text-sm text-gray-700 break-all whitespace-normal">{info.value}</p>
+                          <p className="font-medium text-sm text-foreground break-all whitespace-normal">{info.value}</p>
                           <p className="text-xs text-muted-foreground">{info.description}</p>
                         </div>
                       </div>
@@ -99,7 +103,7 @@ export default function Contact() {
             </div>
 
             {/* Call to Action */}
-            <Card className="bg-gradient-to-r from-primary/10 to-chart-2/10 border-primary/20">
+            <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border border-border shadow-sm">
               <CardContent className="p-6 text-center space-y-4">
                 <MessageSquare className="w-12 h-12 mx-auto text-primary" />
                 <div className="space-y-2">
@@ -112,7 +116,7 @@ export default function Contact() {
           </div>
 
           {/* Contact Form */}
-          <Card className="shadow-2xl border-2 border-primary/10">
+          <Card className="shadow-2xl border-2 border-border bg-card">
             <CardContent className="p-8">
               <div className="space-y-6">
                 <div className="text-center space-y-2">
@@ -159,11 +163,7 @@ export default function Contact() {
         </div>
 
         {/* Footer */}
-        <div className="mt-20 pt-8 border-t border-border text-center space-y-4">
-          <p className="text-muted-foreground">Thanks for visiting! Looking forward to connecting with you.</p>
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Maksudur Rahaman. Built with ❤️ using React & TypeScript.</p>
-        </div>
-      </div>
+</div>
     </section>
   );
 }

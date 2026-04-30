@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button.tsx";
-import { Menu, X, Home, User, Briefcase, FolderOpen, Mail } from "lucide-react";
+import { Menu, X, Home, User, Briefcase, FolderOpen, Mail, Moon, Sun } from "lucide-react";
 
 interface NavigationProps {
   activeSection: string;
@@ -9,14 +10,20 @@ interface NavigationProps {
 export default function Navigation({ activeSection }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const currentTheme = mounted ? resolvedTheme : "light";
+  const toggleTheme = () => setTheme(currentTheme === "dark" ? "light" : "dark");
 
   const navItems = [
     { id: 'hero', label: 'Home', icon: Home },
@@ -43,11 +50,11 @@ export default function Navigation({ activeSection }: NavigationProps) {
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="text-xl font-semibold gradient-text">
-              MR
+              <img className="h-10 w-10" src="https://i.ibb.co.com/HT76bKkk/maksudur-rahaman.png" alt="" />
             </div>
             
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-4">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -59,6 +66,15 @@ export default function Navigation({ activeSection }: NavigationProps) {
                   {item.label}
                 </button>
               ))}
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden md:inline-flex items-center gap-2"
+                onClick={toggleTheme}
+              >
+                {currentTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {currentTheme === "dark" ? "Light" : "Dark"}
+              </Button>
             </div>
             
             {/* Mobile Menu Button */}
@@ -86,8 +102,8 @@ export default function Navigation({ activeSection }: NavigationProps) {
                   <button
                     key={item.id}
                     onClick={() => scrollToSection(item.id)}
-                    className={`flex items-center space-x-3 p-3 rounded-lg text-left transition-colors hover:bg-accent ${
-                      activeSection === item.id ? 'bg-accent text-primary' : 'text-foreground'
+                    className={`flex items-center space-x-3 p-3 rounded-lg text-left transition-colors hover:bg-accent/10 ${
+                      activeSection === item.id ? 'bg-accent/10 text-primary' : 'text-foreground'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -95,6 +111,13 @@ export default function Navigation({ activeSection }: NavigationProps) {
                   </button>
                 );
               })}
+              <button
+                onClick={toggleTheme}
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:bg-accent/10"
+              >
+                {currentTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {currentTheme === "dark" ? "Light Mode" : "Dark Mode"}
+              </button>
             </div>
           </div>
         </div>
