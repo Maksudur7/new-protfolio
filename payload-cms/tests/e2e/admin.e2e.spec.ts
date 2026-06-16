@@ -19,21 +19,21 @@ test.describe('Admin Panel', () => {
   })
 
   test('can navigate to dashboard', async () => {
-    await page.goto('http://localhost:3000/admin')
-    await expect(page).toHaveURL('http://localhost:3000/admin')
+    await page.goto('https://protfolio-payload.vercel.app/admin')
+    await expect(page).toHaveURL('https://protfolio-payload.vercel.app/admin')
     const dashboardArtifact = page.locator('.step-nav__first').first()
     await expect(dashboardArtifact).toBeVisible()
   })
 
   test('can navigate to list view', async () => {
-    await page.goto('http://localhost:3000/admin/collections/users')
-    await expect(page).toHaveURL('http://localhost:3000/admin/collections/users')
+    await page.goto('https://protfolio-payload.vercel.app/admin/collections/users')
+    await expect(page).toHaveURL('https://protfolio-payload.vercel.app/admin/collections/users')
     const listViewArtifact = page.locator('h1', { hasText: 'Users' }).first()
     await expect(listViewArtifact).toBeVisible()
   })
 
   test('can navigate to edit view', async () => {
-    await page.goto('http://localhost:3000/admin/collections/users/create')
+    await page.goto('https://protfolio-payload.vercel.app/admin/collections/users/create')
     await expect(page).toHaveURL(/\/admin\/collections\/users\/[a-zA-Z0-9-_]+/)
     const editViewArtifact = page.locator('input[name="email"]')
     await expect(editViewArtifact).toBeVisible()
