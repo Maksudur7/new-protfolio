@@ -126,7 +126,7 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
 ];
 
 
-const CMS_URL = import.meta.env.VITE_CMS_URL || "http://localhost:3000";
+const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
 
 /** Resolve imageLink: if it's a relative path, prefix with CMS base URL */
 const resolveImageUrl = (link: string): string => {
@@ -158,10 +158,10 @@ const fetchProjectsFromCMS = async (): Promise<ProjectItem[]> => {
     ),
     stats: doc.stats
       ? {
-          stars: doc.stats.stars || undefined,
-          users: doc.stats.users || undefined,
-          completion: doc.stats.completion || undefined,
-        }
+        stars: doc.stats.stars || undefined,
+        users: doc.stats.users || undefined,
+        completion: doc.stats.completion || undefined,
+      }
       : undefined,
   }));
 };

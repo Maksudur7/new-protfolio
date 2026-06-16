@@ -62,7 +62,7 @@ const DEFAULT_EXPERIENCES: ExperienceItem[] = [
   },
 ];
 
-const CMS_URL = import.meta.env.VITE_CMS_URL || "http://localhost:3000";
+const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
 
 const fetchExperiencesFromCMS = async (): Promise<ExperienceItem[]> => {
   const response = await fetch(`${CMS_URL}/api/experiences?limit=100&sort=order`);
@@ -152,13 +152,13 @@ export default function Experience() {
   };
 
   return (
-    <section 
-      id="experience" 
+    <section
+      id="experience"
       className="min-h-screen text-foreground font-sans px-6 py-20 flex flex-col items-center relative overflow-hidden -mt-[1px]"
     >
       {/* Gradient blend overlay - seamless transition */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none z-20" />
-      
+
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute top-32 right-20 w-48 h-48 bg-purple-600/15 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-32 left-20 w-32 h-32 bg-fuchsia-500/15 rounded-full blur-3xl animate-pulse delay-1000" />
@@ -211,13 +211,13 @@ export default function Experience() {
         {/* Experience Grid */}
         {!isLoading && <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {currentExperiences.map((exp) => (
-            <div 
+            <div
               key={exp.id}
               className="group relative p-6 rounded-2xl bg-card/95 border border-border shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_30px_rgba(124,58,237,0.12)] overflow-hidden flex flex-col"
             >
               {/* Hover glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600/0 via-transparent to-transparent group-hover:from-purple-600/10 transition-all duration-300 pointer-events-none" />
-              
+
               <div className="relative z-10 space-y-3 flex flex-col h-full">
                 {/* Icon & Title Section */}
                 <div className="flex items-start gap-3">
@@ -289,11 +289,10 @@ export default function Experience() {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`w-10 h-10 rounded-lg font-medium transition-all duration-300 ${
-                    currentPage === page
+                  className={`w-10 h-10 rounded-lg font-medium transition-all duration-300 ${currentPage === page
                       ? "bg-primary text-primary-foreground border border-primary"
                       : "border border-border bg-muted/80 text-foreground hover:bg-accent/10 hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {page}
                 </button>
