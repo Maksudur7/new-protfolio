@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Calendar,
   Code,
-  ExternalLink,
   Eye,
   Github,
+  Loader2,
   Star,
   Users,
   Zap,
@@ -31,7 +32,7 @@ interface ProjectItem {
   featuredOrder?: number;
 }
 
-const projects: ProjectItem[] = [
+const DEFAULT_PROJECTS: ProjectItem[] = [
   {
     id: 1,
     title: "NGV - Video Streaming Platform",
@@ -122,28 +123,84 @@ const projects: ProjectItem[] = [
       completion: 100,
     },
   },
-  {
-    id: 5,
-    title: "WeatherWise Analytics",
-    description:
-      "Advanced weather application with detailed forecasts, historical data visualization, and location-based insights with beautiful data representations.",
-    technologies: ["Vue.js", "D3.js", "Express", "OpenWeather API"],
-    liveUrl: "#",
-    githubUrl: "#",
-    category: "Data Visualization",
-    imageLink: "/api/placeholder/600/400",
-    featured: false,
-    stats: {
-      stars: 8,
-      users: 120,
-      completion: 92,
-    },
-  },
 ];
+
+
+const CMS_URL = import.meta.env.VITE_CMS_URL || "http://localhost:3000";
+
+/** Resolve imageLink: if it's a relative path, prefix with CMS base URL */
+const resolveImageUrl = (link: string): string => {
+  if (!link) return "";
+  if (link.startsWith("http://") || link.startsWith("https://")) return link;
+  return `${CMS_URL}${link.startsWith("/") ? "" : "/"}${link}`;
+};
+
+const fetchProjectsFromCMS = async (): Promise<ProjectItem[]> => {
+  const response = await fetch(`${CMS_URL}/api/projects?limit=100&sort=featuredOrder`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch projects");
+  }
+  const data = await response.json();
+
+  // Transform Payload CMS schema to fit frontend schema
+  return (data.docs || []).map((doc: any) => ({
+    id: doc.id,
+    title: doc.title,
+    description: doc.description,
+    category: doc.category,
+    imageLink: resolveImageUrl(doc.imageLink || ""),
+    liveUrl: doc.liveUrl || undefined,
+    githubUrl: doc.githubUrl || undefined,
+    featured: doc.featured || false,
+    featuredOrder: doc.featuredOrder ?? undefined,
+    technologies: (doc.technologies || []).map((tech: any) =>
+      typeof tech === "string" ? tech : tech.name
+    ),
+    stats: doc.stats
+      ? {
+          stars: doc.stats.stars || undefined,
+          users: doc.stats.users || undefined,
+          completion: doc.stats.completion || undefined,
+        }
+      : undefined,
+  }));
+};
+
+/** Loading skeleton card */
+function ProjectSkeleton() {
+  return (
+    <div className="animate-pulse rounded-2xl bg-card/60 border border-border p-6 space-y-4">
+      <div className="h-4 w-1/3 rounded bg-muted/60" />
+      <div className="h-6 w-2/3 rounded bg-muted/60" />
+      <div className="h-40 rounded-xl bg-muted/40" />
+      <div className="flex gap-2">
+        <div className="h-6 w-20 rounded bg-muted/50" />
+        <div className="h-6 w-20 rounded bg-muted/50" />
+        <div className="h-6 w-16 rounded bg-muted/50" />
+      </div>
+    </div>
+  );
+}
 
 export default function Projects() {
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const [projectPage, setProjectPage] = useState(1);
+
+  const {
+    data: cmsProjects,
+    isLoading,
+    isError,
+  } = useQuery<ProjectItem[]>({
+    queryKey: ["projects"],
+    queryFn: fetchProjectsFromCMS,
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+  });
+
+  // Fallback to hardcoded mock projects if CMS is down or has no data
+  const projects =
+    cmsProjects && cmsProjects.length > 0 ? cmsProjects : DEFAULT_PROJECTS;
+
   const featuredProjects = projects
     .filter((p) => p.featured)
     .sort((a, b) => (a.featuredOrder || 0) - (b.featuredOrder || 0));
@@ -185,10 +242,40 @@ export default function Projects() {
             A polished portfolio of my top projects built with a refined dark
             and white visual system.
           </p>
+          {/* CMS status indicator */}
+          {isLoading && (
+            <div className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="w-3 h-3 animate-spin text-purple-400" />
+              <span>Loading from CMS...</span>
+            </div>
+          )}
+          {isError && (
+            <div className="mt-3 inline-flex items-center gap-2 text-xs text-yellow-500/80">
+              <span className="w-2 h-2 rounded-full bg-yellow-500/80 inline-block" />
+              <span>Showing cached data — CMS offline</span>
+            </div>
+          )}
+          {!isLoading && !isError && cmsProjects && cmsProjects.length > 0 && (
+            <div className="mt-3 inline-flex items-center gap-2 text-xs text-emerald-500/80">
+              <span className="w-2 h-2 rounded-full bg-emerald-500/80 inline-block" />
+              <span>Live from CMS</span>
+            </div>
+          )}
         </div>
 
+        {/* Loading skeletons */}
+        {isLoading && (
+          <div className="space-y-6 mb-10">
+            <ProjectSkeleton />
+            <div className="grid md:grid-cols-2 gap-6">
+              <ProjectSkeleton />
+              <ProjectSkeleton />
+            </div>
+          </div>
+        )}
+
         {/* Featured Projects - Hero Layout */}
-        <div className="space-y-20 mb-10">
+        {!isLoading && <div className="space-y-20 mb-10">
           {featuredProjects.map((project, index) => (
             <div
               key={project.id}
@@ -361,7 +448,7 @@ export default function Projects() {
               </div>
             </div>
           ))}
-        </div>
+        </div>}
 
         {/* Other Projects - Grid Layout */}
         <div className="space-y-8">

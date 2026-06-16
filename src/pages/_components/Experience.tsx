@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Briefcase, MapPin, Calendar, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Briefcase, MapPin, Calendar, ArrowUpRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge.tsx";
 
 interface ExperienceItem {
-  id: number;
+  id: number | string;
   title: string;
   company: string;
   period: string;
@@ -11,9 +12,10 @@ interface ExperienceItem {
   description: string;
   skills: string[];
   icon: string;
+  order?: number;
 }
 
-const experiences: ExperienceItem[] = [
+const DEFAULT_EXPERIENCES: ExperienceItem[] = [
   {
     id: 1,
     icon: "💼",
@@ -23,6 +25,7 @@ const experiences: ExperienceItem[] = [
     location: "Bangladesh · Remote",
     description: "Building responsive, production-ready interfaces using React.js, Next.js, and Tailwind CSS while collaborating with backend teams.",
     skills: ["Next.js", "React.js", "TypeScript", "Tailwind CSS", "Responsive UI"],
+    order: 1,
   },
   {
     id: 2,
@@ -33,6 +36,7 @@ const experiences: ExperienceItem[] = [
     location: "Remote",
     description: "Designed a secure authentication platform with Better-Auth, Prisma ORM, PostgreSQL, and RBAC for enterprise access control.",
     skills: ["Better-Auth", "Prisma", "PostgreSQL", "RBAC", "JWT"],
+    order: 2,
   },
   {
     id: 3,
@@ -43,6 +47,7 @@ const experiences: ExperienceItem[] = [
     location: "India · Remote",
     description: "Developed reusable UI components with Tailwind CSS, optimized API integration logic, and improved UX with React Query.",
     skills: ["React.js", "Node.js", "Express.js", "React Query", "Tailwind CSS"],
+    order: 3,
   },
   {
     id: 4,
@@ -53,14 +58,83 @@ const experiences: ExperienceItem[] = [
     location: "Barishal",
     description: "Supported full-stack development workflows by building responsive layouts, integrating backend APIs, and applying debugging best practices.",
     skills: ["HTML", "CSS", "JavaScript", "API Integration", "Debugging"],
+    order: 4,
   },
 ];
+
+const CMS_URL = import.meta.env.VITE_CMS_URL || "http://localhost:3000";
+
+const fetchExperiencesFromCMS = async (): Promise<ExperienceItem[]> => {
+  const response = await fetch(`${CMS_URL}/api/experiences?limit=100&sort=order`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch experiences");
+  }
+  const data = await response.json();
+
+  // Transform Payload CMS schema to fit frontend schema
+  return (data.docs || []).map((doc: any) => ({
+    id: doc.id,
+    icon: doc.icon || "💼",
+    title: doc.title,
+    company: doc.company,
+    period: doc.period,
+    location: doc.location,
+    description: doc.description,
+    order: doc.order ?? 0,
+    // CMS stores skills as array of {id, name} objects
+    skills: (doc.skills || []).map((skill: any) =>
+      typeof skill === "string" ? skill : skill.name
+    ),
+  }));
+};
+
+/** Loading skeleton card for experience */
+function ExperienceSkeleton() {
+  return (
+    <div className="animate-pulse rounded-2xl bg-card/60 border border-border p-6 space-y-3">
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-lg bg-muted/60 shrink-0" />
+        <div className="space-y-2 flex-1">
+          <div className="h-5 w-2/3 rounded bg-muted/60" />
+          <div className="h-3 w-1/3 rounded bg-muted/50" />
+        </div>
+      </div>
+      <div className="flex gap-3">
+        <div className="h-3 w-24 rounded bg-muted/50" />
+        <div className="h-3 w-20 rounded bg-muted/50" />
+      </div>
+      <div className="h-12 rounded bg-muted/40" />
+      <div className="flex gap-2">
+        <div className="h-5 w-16 rounded bg-muted/50" />
+        <div className="h-5 w-20 rounded bg-muted/50" />
+        <div className="h-5 w-14 rounded bg-muted/50" />
+      </div>
+    </div>
+  );
+}
 
 export default function Experience() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
+
+  const {
+    data: cmsExperiences,
+    isLoading,
+    isError,
+  } = useQuery<ExperienceItem[]>({
+    queryKey: ["experiences"],
+    queryFn: fetchExperiencesFromCMS,
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+  });
+
+  // Fallback to hardcoded mock experiences if CMS is down or has no data
+  const experiences =
+    cmsExperiences && cmsExperiences.length > 0
+      ? [...cmsExperiences].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      : DEFAULT_EXPERIENCES;
+
   const totalPages = Math.ceil(experiences.length / itemsPerPage);
-  
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentExperiences = experiences.slice(startIndex, endIndex);
@@ -103,10 +177,39 @@ export default function Experience() {
           <p className="text-slate-600 max-w-2xl text-lg dark:text-gray-300">
             A showcase of my professional growth, roles, and the impact I've created through various projects and positions.
           </p>
+          {/* CMS status indicator */}
+          {isLoading && (
+            <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="w-3 h-3 animate-spin text-purple-400" />
+              <span>Loading from CMS...</span>
+            </div>
+          )}
+          {isError && (
+            <div className="inline-flex items-center gap-2 text-xs text-yellow-500/80">
+              <span className="w-2 h-2 rounded-full bg-yellow-500/80 inline-block" />
+              <span>Showing cached data — CMS offline</span>
+            </div>
+          )}
+          {!isLoading && !isError && cmsExperiences && cmsExperiences.length > 0 && (
+            <div className="inline-flex items-center gap-2 text-xs text-emerald-500/80">
+              <span className="w-2 h-2 rounded-full bg-emerald-500/80 inline-block" />
+              <span>Live from CMS</span>
+            </div>
+          )}
         </div>
 
+        {/* Loading skeletons */}
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <ExperienceSkeleton />
+            <ExperienceSkeleton />
+            <ExperienceSkeleton />
+            <ExperienceSkeleton />
+          </div>
+        )}
+
         {/* Experience Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        {!isLoading && <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           {currentExperiences.map((exp) => (
             <div 
               key={exp.id}
@@ -167,7 +270,7 @@ export default function Experience() {
               </div>
             </div>
           ))}
-        </div>
+        </div>}
 
         {/* Pagination Controls */}
         {totalPages > 1 && (

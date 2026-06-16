@@ -1,4 +1,3 @@
-import convexPlugin from "@convex-dev/eslint-plugin";
 import js from "@eslint/js";
 import herculesPlugin from "@usehercules/eslint-plugin";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -16,7 +15,6 @@ export default tseslint.config([
       tseslint.configs.recommended,
       reactHooks.configs["recommended-latest"],
       reactRefresh.configs.vite,
-      convexPlugin.configs.recommended,
       herculesPlugin.configs.recommended,
     ],
     rules: {
