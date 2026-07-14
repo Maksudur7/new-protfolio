@@ -125,7 +125,7 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
 ];
 
-const CMS_URL = import.meta.env.VITE_CMS_URL || "";
+const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
 /** Resolve imageLink: if it's a relative path, prefix with CMS base URL */
 const resolveImageUrl = (link: string): string => {
   if (!link) return "";

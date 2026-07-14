@@ -5,6 +5,9 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import { globalIgnores } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 export default tseslint.config([
   globalIgnores(["dist", "**/_generated/*"]),
@@ -29,4 +32,4 @@ export default tseslint.config([
       globals: globals.browser,
     },
   },
-]);
+]); 

@@ -61,7 +61,7 @@ const DEFAULT_EXPERIENCES: ExperienceItem[] = [
     order: 4,
   },
 ];
-const CMS_URL = import.meta.env.VITE_CMS_URL || "";
+const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
 const fetchExperiencesFromCMS = async (): Promise<ExperienceItem[]> => {
   const response = await fetch(`${CMS_URL}/api/experiences?limit=100&sort=order`);
   if (!response.ok) {
