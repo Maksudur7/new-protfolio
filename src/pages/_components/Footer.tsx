@@ -1,19 +1,50 @@
-import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Github, Linkedin, Mail, ArrowUpRight, Loader2 } from "lucide-react";
+
+const CMS_URL = import.meta.env.VITE_CMS_URL || "";
+
+const fetchFooterFromCMS = async () => {
+  const response = await fetch(`${CMS_URL}/api/globals/footer`);
+  if (!response.ok) throw new Error("Failed to fetch footer data");
+  return response.json();
+};
 
 export default function Footer() {
+  const { data: footerData, isLoading } = useQuery({
+    queryKey: ["footer"],
+    queryFn: fetchFooterFromCMS,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (isLoading) {
+    return (
+      <footer className="text-foreground border-t border-border py-12 flex justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </footer>
+    );
+  }
+
+  const socialLinks = footerData?.socialLinks || [
+    { platform: "github", url: "https://github.com/Maksudur7", label: "github.com/Maksudur7" },
+    { platform: "linkedin", url: "https://www.linkedin.com/in/maksudur-rahaman", label: "linkedin.com/in/maksudur-rahaman" }
+  ];
+
+  const githubLink = socialLinks.find((l: any) => l.platform === 'github');
+  const linkedinLink = socialLinks.find((l: any) => l.platform === 'linkedin');
+
   return (
     <footer className="text-foreground border-t border-border py-12">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_0.9fr] items-start">
           <div className="space-y-4">
             <span className="inline-flex items-center rounded-full border border-border bg-muted px-4 py-2 text-xs uppercase tracking-[0.28em] text-muted-foreground">
-              Final Touch
+              {footerData?.badgeText || "Final Touch"}
             </span>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
-              Ready to build a polished digital experience together?
+              {footerData?.title || "Ready to build a polished digital experience together?"}
             </h2>
             <p className="max-w-2xl text-muted-foreground leading-relaxed">
-              I create modern web products with clean UX, fast performance, and a refined dark + white visual system. Let’s turn your idea into a memorable website.
+              {footerData?.description || "I create modern web products with clean UX, fast performance, and a refined dark + white visual system. Let’s turn your idea into a memorable website."}
             </p>
           </div>
 
@@ -22,27 +53,31 @@ export default function Footer() {
               <Mail className="w-5 h-5" />
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Email</p>
-                <p className="font-medium text-foreground">maksudurrahamanmishu7@gmail.com</p>
+                <p className="font-medium text-foreground">{footerData?.email || "maksudurrahamanmishu7@gmail.com"}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 text-foreground">
-              <Github className="w-5 h-5" />
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">GitHub</p>
-                <a href="https://github.com/Maksudur7" target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:text-accent transition-colors">
-                  github.com/Maksudur7
-                </a>
+            {githubLink && (
+              <div className="flex items-center gap-3 text-foreground">
+                <Github className="w-5 h-5" />
+                <div>
+                  <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">GitHub</p>
+                  <a href={githubLink.url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:text-accent transition-colors">
+                    {githubLink.label}
+                  </a>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 text-foreground">
-              <Linkedin className="w-5 h-5" />
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">LinkedIn</p>
-                <a href="https://www.linkedin.com/in/maksudur-rahaman" target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:text-accent transition-colors">
-                  linkedin.com/in/maksudur-rahaman
-                </a>
+            )}
+            {linkedinLink && (
+              <div className="flex items-center gap-3 text-foreground">
+                <Linkedin className="w-5 h-5" />
+                <div>
+                  <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">LinkedIn</p>
+                  <a href={linkedinLink.url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:text-accent transition-colors">
+                    {linkedinLink.label}
+                  </a>
+                </div>
               </div>
-            </div>
+            )}
             <a
               href="#hero"
               className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-3 text-sm font-medium text-foreground transition hover:bg-accent/20"
@@ -54,7 +89,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-border pt-6 flex flex-col gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Maksudur Rahaman. Designed with a polished dark + white theme.</p>
+          <p>{footerData?.copyrightText || `© ${new Date().getFullYear()} Maksudur Rahaman. Designed with a polished dark + white theme.`}</p>
           <div className="flex flex-wrap items-center gap-4">
             <a href="#hero" className="text-muted-foreground hover:text-foreground transition-colors">Home</a>
             <a href="#experience" className="text-muted-foreground hover:text-foreground transition-colors">Experience</a>

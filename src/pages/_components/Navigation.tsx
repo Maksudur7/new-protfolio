@@ -1,7 +1,25 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button.tsx";
 import { Menu, X, Home, User, Briefcase, FolderOpen, Mail, Moon, Sun } from "lucide-react";
+
+const CMS_URL = import.meta.env.VITE_CMS_URL || "";
+
+const resolveImageUrl = (link: string | any): string => {
+  if (!link) return "";
+  if (typeof link === 'object' && link.url) {
+    link = link.url;
+  }
+  if (link.startsWith("http://") || link.startsWith("https://") || link.startsWith("data:")) return link;
+  return `${CMS_URL}${link.startsWith("/") ? "" : "/"}${link}`;
+};
+
+const fetchNavigationFromCMS = async () => {
+  const response = await fetch(`${CMS_URL}/api/globals/navigation`);
+  if (!response.ok) throw new Error("Failed to fetch navigation data");
+  return response.json();
+};
 
 interface NavigationProps {
   activeSection: string;
@@ -12,6 +30,12 @@ export default function Navigation({ activeSection }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme, setTheme } = useTheme();
+
+  const { data: navData } = useQuery({
+    queryKey: ["navigation"],
+    queryFn: fetchNavigationFromCMS,
+    staleTime: 1000 * 60 * 5,
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -25,12 +49,23 @@ export default function Navigation({ activeSection }: NavigationProps) {
   const currentTheme = mounted ? resolvedTheme : "light";
   const toggleTheme = () => setTheme(currentTheme === "dark" ? "light" : "dark");
 
-  const navItems = [
-    { id: 'hero', label: 'Home', icon: Home },
-    { id: 'about', label: 'About', icon: User },
-    { id: 'experience', label: 'Experience', icon: Briefcase },
-    { id: 'projects', label: 'Projects', icon: FolderOpen },
-    { id: 'contact', label: 'Contact', icon: Mail },
+  const getLucideIcon = (name: string) => {
+    switch (name) {
+      case 'Home': return Home;
+      case 'User': return User;
+      case 'Briefcase': return Briefcase;
+      case 'FolderOpen': return FolderOpen;
+      case 'Mail': return Mail;
+      default: return Home;
+    }
+  };
+
+  const navItems = navData?.navItems || [
+    { id: 'hero', label: 'Home', iconName: 'Home' },
+    { id: 'about', label: 'About', iconName: 'User' },
+    { id: 'experience', label: 'Experience', iconName: 'Briefcase' },
+    { id: 'projects', label: 'Projects', iconName: 'FolderOpen' },
+    { id: 'contact', label: 'Contact', iconName: 'Mail' },
   ];
 
   const scrollToSection = (sectionId: string) => {
@@ -43,19 +78,21 @@ export default function Navigation({ activeSection }: NavigationProps) {
 
   return (
     <>
-      {/* Desktop Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-background/80 backdrop-blur-md border-b border-border' : 'bg-transparent'
       }`}>
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="text-xl font-semibold gradient-text">
-              <img className="h-10 w-10" src="https://i.ibb.co.com/HT76bKkk/maksudur-rahaman.png" alt="" />
+              <img 
+                className="h-10 w-10 object-contain rounded-full border border-border" 
+                src={resolveImageUrl(navData?.logo) || "https://i.ibb.co.com/HT76bKkk/maksudur-rahaman.png"} 
+                alt="Logo" 
+              />
             </div>
             
-            {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-4">
-              {navItems.map((item) => (
+              {navItems.map((item: any) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
@@ -77,7 +114,6 @@ export default function Navigation({ activeSection }: NavigationProps) {
               </Button>
             </div>
             
-            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
@@ -90,14 +126,13 @@ export default function Navigation({ activeSection }: NavigationProps) {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
       {isOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="fixed inset-0 bg-background/80 backdrop-blur-md" onClick={() => setIsOpen(false)} />
           <div className="fixed top-0 right-0 h-full w-64 bg-card border-l border-border p-6">
             <div className="flex flex-col space-y-4 mt-16">
-              {navItems.map((item) => {
-                const Icon = item.icon;
+              {navItems.map((item: any) => {
+                const Icon = getLucideIcon(item.iconName);
                 return (
                   <button
                     key={item.id}

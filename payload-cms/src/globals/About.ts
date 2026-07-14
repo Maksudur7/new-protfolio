@@ -1,17 +1,12 @@
 import type { GlobalConfig } from 'payload'
 
 export const About: GlobalConfig = {
-  slug: 'about-section',
+  slug: 'about',
+  label: 'About Section',
   access: {
-    read: () => true, // Allows public (unauthenticated) read access
+    read: () => true,
   },
   fields: [
-    {
-      name: 'badgeText',
-      type: 'text',
-      required: true,
-      defaultValue: 'About Me',
-    },
     {
       name: 'title',
       type: 'text',
@@ -19,61 +14,44 @@ export const About: GlobalConfig = {
       defaultValue: 'Maksudur Rahaman — Full-Stack Developer',
     },
     {
-      name: 'description',
+      name: 'paragraph1',
       type: 'textarea',
       required: true,
+      defaultValue: 'Innovative Full-Stack Developer specializing in Next.js and scalable backend architecture. I build secure, role-based systems and high-performance web applications with a focus on maintainable code, strong data integrity, and real-world product delivery.',
     },
     {
-      name: 'introParagraphs',
-      type: 'array',
+      name: 'paragraph2',
+      type: 'textarea',
       required: true,
+      defaultValue: 'Based in Barishal, Bangladesh, I manage contractual projects from architecture through deployment. My process combines clean frontend design, efficient backend workflows, and secure authentication, so teams can move faster without compromising reliability.',
+    },
+    {
+      name: 'paragraph3',
+      type: 'textarea',
+      required: true,
+      defaultValue: 'I have hands-on experience with Prisma, Better-Auth, JWT, PostgreSQL, and AI API integrations, and I enjoy building systems that scale while staying easy to maintain.',
+    },
+    {
+      name: 'profileImage',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+    },
+    {
+      name: 'taglines',
+      type: 'array',
+      label: 'Identity Taglines',
       fields: [
         {
-          name: 'paragraph',
-          type: 'textarea',
-          required: true,
-        },
-      ],
-    },
-    {
-      name: 'identityLabel',
-      type: 'text',
-      required: true,
-      defaultValue: 'Portfolio Identity',
-    },
-    {
-      name: 'identityHeading',
-      type: 'text',
-      required: true,
-      defaultValue: 'Design meets code.',
-    },
-    {
-      name: 'identityLocation',
-      type: 'text',
-      required: true,
-      defaultValue: 'Barishal, Bangladesh · +8801880829496',
-    },
-    {
-      name: 'identityBulletPoints',
-      type: 'array',
-      required: true,
-      fields: [
-        {
-          name: 'point',
+          name: 'text',
           type: 'text',
-          required: true,
         },
       ],
-    },
-    {
-      name: 'quoteText',
-      type: 'textarea',
-      required: true,
     },
     {
       name: 'stats',
       type: 'array',
-      required: true,
+      label: 'Stats Cards',
       fields: [
         {
           name: 'number',
@@ -90,14 +68,8 @@ export const About: GlobalConfig = {
     {
       name: 'features',
       type: 'array',
-      required: true,
+      label: 'Feature Highlights',
       fields: [
-        {
-          name: 'icon',
-          type: 'select',
-          required: true,
-          options: ['Shield', 'Code', 'Database', 'Zap'],
-        },
         {
           name: 'title',
           type: 'text',
@@ -109,29 +81,21 @@ export const About: GlobalConfig = {
           required: true,
         },
         {
-          name: 'color',
+          name: 'iconName',
           type: 'text',
           required: true,
           admin: {
-            description: 'CSS text color class (e.g. text-red-500 or text-purple-500)',
-          },
-        },
-      ],
-    },
-    {
-      name: 'education',
-      type: 'array',
-      required: true,
-      fields: [
-        {
-          name: 'title',
-          type: 'text',
-          required: true,
+            description: 'Lucide icon name (e.g., Shield, Code, Database, Zap)',
+          }
         },
         {
-          name: 'period',
+          name: 'colorClass',
           type: 'text',
           required: true,
+          defaultValue: 'text-primary',
+          admin: {
+            description: 'Tailwind text color class (e.g., text-red-500)',
+          }
         },
       ],
     },

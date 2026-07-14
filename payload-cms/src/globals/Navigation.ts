@@ -1,22 +1,28 @@
 import type { GlobalConfig } from 'payload'
 
-export const Footer: GlobalConfig = {
-  slug: 'footer',
-  label: 'Footer Section',
+export const Navigation: GlobalConfig = {
+  slug: 'navigation',
+  label: 'Navigation Section',
   access: {
     read: () => true,
   },
   fields: [
     {
-      name: 'copyrightText',
+      name: 'logoText',
       type: 'text',
       required: true,
-      defaultValue: '© 2024 Maksudur Rahaman. All rights reserved.',
+      defaultValue: 'Maksudur',
     },
     {
-      name: 'links',
+      name: 'resumeLink',
+      type: 'text',
+      required: true,
+      defaultValue: '/maksudur-rahaman.pdf',
+    },
+    {
+      name: 'navItems',
       type: 'array',
-      label: 'Footer Links',
+      label: 'Menu Items',
       fields: [
         {
           name: 'label',

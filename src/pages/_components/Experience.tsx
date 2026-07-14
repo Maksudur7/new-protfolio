@@ -61,9 +61,7 @@ const DEFAULT_EXPERIENCES: ExperienceItem[] = [
     order: 4,
   },
 ];
-
-const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
-
+const CMS_URL = import.meta.env.VITE_CMS_URL || "";
 const fetchExperiencesFromCMS = async (): Promise<ExperienceItem[]> => {
   const response = await fetch(`${CMS_URL}/api/experiences?limit=100&sort=order`);
   if (!response.ok) {
@@ -290,8 +288,8 @@ export default function Experience() {
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`w-10 h-10 rounded-lg font-medium transition-all duration-300 ${currentPage === page
-                      ? "bg-primary text-primary-foreground border border-primary"
-                      : "border border-border bg-muted/80 text-foreground hover:bg-accent/10 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground border border-primary"
+                    : "border border-border bg-muted/80 text-foreground hover:bg-accent/10 hover:text-foreground"
                     }`}
                 >
                   {page}

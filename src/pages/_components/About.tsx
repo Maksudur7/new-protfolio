@@ -1,4 +1,5 @@
-﻿import {
+import { useQuery } from "@tanstack/react-query";
+import {
   Code,
   Database,
   Github,
@@ -7,62 +8,86 @@
   Mail,
   Shield,
   Zap,
+  Loader2
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge.tsx";
 import { Card, CardContent } from "@/components/ui/card.tsx";
 
-interface Stat {
-  number: string;
-  label: string;
-}
+const CMS_URL = import.meta.env.VITE_CMS_URL || "";
 
-interface Feature {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  color: string;
-}
+const resolveImageUrl = (link: string | any): string => {
+  if (!link) return "";
+  if (typeof link === 'object' && link.url) {
+    link = link.url;
+  }
+  if (link.startsWith("http://") || link.startsWith("https://") || link.startsWith("data:")) return link;
+  return `${CMS_URL}${link.startsWith("/") ? "" : "/"}${link}`;
+};
 
-const stats: Stat[] = [
-  { number: "10+", label: "Projects Completed" },
-  { number: "1+", label: "Years Experience" },
-  { number: "1+", label: "Contract Projects" },
-  { number: "3+", label: "AI & Real-Time Systems" },
-];
+const fetchAboutFromCMS = async () => {
+  const response = await fetch(`${CMS_URL}/api/globals/about`);
+  if (!response.ok) throw new Error("Failed to fetch about data");
+  return response.json();
+};
 
-const features: Feature[] = [
-  {
-    icon: Shield,
-    title: "Security-First Architecture",
-    description:
-      "Building RBAC, JWT, and Better-Auth solutions for secure, production-ready systems.",
-    color: "text-red-500",
-  },
-  {
-    icon: Code,
-    title: "Next.js & React Expertise",
-    description:
-      "Developing polished interfaces with Next.js App Router, React, and Tailwind CSS.",
-    color: "text-slate-900",
-  },
-  {
-    icon: Database,
-    title: "Prisma & PostgreSQL",
-    description:
-      "Designing scalable schemas and optimized queries for reliable backend performance.",
-    color: "text-sky-500",
-  },
-  {
-    icon: Zap,
-    title: "AI & Real-Time Integrations",
-    description:
-      "Connecting OpenAI, Socket.io, and automation for smarter user experiences.",
-    color: "text-purple-500",
-  },
-];
+const fetchEducationFromCMS = async () => {
+  const response = await fetch(`${CMS_URL}/api/education?limit=100&sort=order`);
+  if (!response.ok) throw new Error("Failed to fetch education data");
+  return response.json();
+};
+
+const fetchExperienceFromCMS = async () => {
+  const response = await fetch(`${CMS_URL}/api/experiences?limit=2&sort=order`);
+  if (!response.ok) throw new Error("Failed to fetch experiences");
+  return response.json();
+};
 
 export default function About() {
+  const { data: aboutData, isLoading: aboutLoading } = useQuery({
+    queryKey: ["about"],
+    queryFn: fetchAboutFromCMS,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: educationData, isLoading: eduLoading } = useQuery({
+    queryKey: ["education"],
+    queryFn: fetchEducationFromCMS,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: experienceData, isLoading: expLoading } = useQuery({
+    queryKey: ["experiences"],
+    queryFn: fetchExperienceFromCMS,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (aboutLoading) {
+    return (
+      <section id="about" className="py-20 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+      </section>
+    );
+  }
+
+  const getLucideIcon = (name: string) => {
+    switch (name) {
+      case 'Shield': return Shield;
+      case 'Code': return Code;
+      case 'Database': return Database;
+      case 'Zap': return Zap;
+      default: return Heart;
+    }
+  };
+
+  const stats = aboutData?.stats || [
+    { number: "10+", label: "Projects Completed" },
+    { number: "1+", label: "Years Experience" },
+  ];
+
+  const features = aboutData?.features || [];
+  const taglines = aboutData?.taglines || [];
+
   return (
     <section
       id="about"
@@ -76,7 +101,6 @@ export default function About() {
       <div className="absolute bottom-20 left-16 w-40 h-40 bg-sky-400/10 rounded-full blur-3xl animate-pulse delay-700" />
 
       <div className="max-w-6xl mx-auto relative z-10">
-
         <div className="mb-16 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-3 rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-foreground shadow-sm">
@@ -84,26 +108,17 @@ export default function About() {
               About Me
             </div>
             <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-950 dark:text-white">
-              Maksudur Rahaman — Full-Stack Developer
+              {aboutData?.title || "Maksudur Rahaman — Full-Stack Developer"}
             </h2>
             <p className="max-w-3xl text-lg leading-8 text-slate-600 dark:text-slate-300">
-              Innovative Full-Stack Developer specializing in Next.js and
-              scalable backend architecture. I build secure, role-based systems
-              and high-performance web applications with a focus on maintainable
-              code, strong data integrity, and real-world product delivery.
+              {aboutData?.paragraph1 || "Innovative Full-Stack Developer specializing in Next.js and scalable backend architecture."}
             </p>
             <div className="space-y-4 text-slate-600 dark:text-slate-300 leading-7">
               <p>
-                Based in Barishal, Bangladesh, I manage contractual projects
-                from architecture through deployment. My process combines clean
-                frontend design, efficient backend workflows, and secure
-                authentication, so teams can move faster without compromising
-                reliability.
+                {aboutData?.paragraph2 || "Based in Barishal, Bangladesh, I manage contractual projects from architecture through deployment."}
               </p>
               <p>
-                I have hands-on experience with Prisma, Better-Auth, JWT,
-                PostgreSQL, and AI API integrations, and I enjoy building
-                systems that scale while staying easy to maintain.
+                {aboutData?.paragraph3 || "I have hands-on experience with Prisma, Better-Auth, JWT, PostgreSQL, and AI API integrations."}
               </p>
             </div>
           </div>
@@ -138,8 +153,10 @@ export default function About() {
                   <div className="w-52 h-52 rounded-full border border-border bg-gradient-to-br from-primary/20 to-transparent p-1 shadow-[0_0_50px_rgba(139,92,246,0.15)]">
                     <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-muted">
                       <span className="text-6xl font-bold text-foreground">
-
-                        <img src="https://i.ibb.co.com/HT76bKkk/maksudur-rahaman.png" alt="" />
+                        <img 
+                          src={resolveImageUrl(aboutData?.profileImage) || "https://i.ibb.co.com/HT76bKkk/maksudur-rahaman.png"} 
+                          alt="Profile" 
+                        />
                       </span>
                     </div>
                   </div>
@@ -151,16 +168,16 @@ export default function About() {
                       Design meets code.
                     </h2>
                     <div className="mt-4 space-y-2 text-left text-sm text-muted-foreground">
-
-                      <p>Barishal, Bangladesh · +8801880829496</p>
-                      <p>
-                        Contract backend work with Better-Auth, Prisma &
-                        PostgreSQL
-                      </p>
-                      <p>
-                        Experienced in Next.js App Router, Nest.js, RBAC, and AI
-                        integrations
-                      </p>
+                      {taglines.map((t: any, i: number) => (
+                        <p key={i}>{t.text}</p>
+                      ))}
+                      {taglines.length === 0 && (
+                        <>
+                          <p>Barishal, Bangladesh · +8801880829496</p>
+                          <p>Contract backend work with Better-Auth, Prisma & PostgreSQL</p>
+                          <p>Experienced in Next.js App Router, Nest.js, RBAC, and AI integrations</p>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -178,7 +195,7 @@ export default function About() {
         </div>
 
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4 mb-12">
-          {stats.map((stat, index) => (
+          {stats.map((stat: any, index: number) => (
             <Card
               key={index}
               className="border border-border bg-card/90 text-center shadow-sm transition-shadow duration-300 hover:shadow-lg"
@@ -196,8 +213,8 @@ export default function About() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
+          {features.map((feature: any, index: number) => {
+            const Icon = getLucideIcon(feature.iconName);
             return (
               <Card
                 key={index}
@@ -205,7 +222,7 @@ export default function About() {
               >
                 <CardContent className="p-0 text-left">
                   <div
-                    className={`mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-muted text-2xl text-current transition-colors ${feature.color}`}
+                    className={`mb-5 inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-muted text-2xl text-current transition-colors ${feature.colorClass || 'text-primary'}`}
                   >
                     <Icon className="w-7 h-7" />
                   </div>
@@ -225,28 +242,24 @@ export default function About() {
           <Card className="border border-border bg-card/95 shadow-sm">
             <CardContent className="p-6">
               <h3 className="text-xl font-semibold mb-4">Recent Experience</h3>
-              <ul className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
-                <li>
-                  <p className="font-medium">
-                    Backend Developer (Contractual) · Gurdia-Auth Project
-                  </p>
-                  <p>Oct 2024 – Present</p>
-                  <p>
-                    Designed Better-Auth integration and RBAC middleware for
-                    secure role management.
-                  </p>
-                </li>
-                <li>
-                  <p className="font-medium">
-                    Frontend Developer Intern · Airepro Solution Pvt Ltd
-                  </p>
-                  <p>Apr 2024 – Aug 2024</p>
-                  <p>
-                    Built responsive UI components, optimized API logic, and
-                    collaborated via GitHub Flow.
-                  </p>
-                </li>
-              </ul>
+              {expLoading ? (
+                <div className="py-4 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
+              ) : (
+                <ul className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                  {experienceData?.docs?.map((exp: any, i: number) => (
+                    <li key={i}>
+                      <p className="font-medium">
+                        {exp.title} · {exp.company}
+                      </p>
+                      <p>{exp.period}</p>
+                      <p>{exp.description}</p>
+                    </li>
+                  ))}
+                  {(!experienceData?.docs || experienceData.docs.length === 0) && (
+                    <li>No recent experiences found.</li>
+                  )}
+                </ul>
+              )}
             </CardContent>
           </Card>
           <Card className="border border-border bg-card/95 shadow-sm">
@@ -254,33 +267,23 @@ export default function About() {
               <h3 className="text-xl font-semibold mb-4">
                 Education & Training
               </h3>
-              <ul className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
-                <li>
-                  <p className="font-medium">
-                    B.Sc. in CSE · Uttara University
-                  </p>
-                  <p>2026 – 2029 (Ongoing)</p>
-                </li>
-                <li>
-                  <p className="font-medium">
-                    Diploma in Computer Technology · Barisal Polytechnic
-                    Institute
-                  </p>
-                  <p>2021 – 2025</p>
-                </li>
-                <li>
-                  <p className="font-medium">
-                    Programming Hero · Full-Stack Web Development
-                  </p>
-                  <p>2023 – 2024</p>
-                </li>
-                <li>
-                  <p className="font-medium">
-                    Sheikh Kamal IT Training · Professional Web Development
-                  </p>
-                  <p>2022 – 2023</p>
-                </li>
-              </ul>
+              {eduLoading ? (
+                <div className="py-4 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
+              ) : (
+                <ul className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                  {educationData?.docs?.map((edu: any, i: number) => (
+                    <li key={i}>
+                      <p className="font-medium">
+                        {edu.degree} · {edu.institute}
+                      </p>
+                      <p>{edu.period}</p>
+                    </li>
+                  ))}
+                  {(!educationData?.docs || educationData.docs.length === 0) && (
+                    <li>No education data found.</li>
+                  )}
+                </ul>
+              )}
             </CardContent>
           </Card>
         </div>

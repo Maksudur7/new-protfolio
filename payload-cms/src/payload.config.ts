@@ -11,11 +11,13 @@ import { Folders } from './collections/Folders'
 import { Tags } from './collections/Tags'
 import { Projects } from './collections/Projects'
 import { Experience } from './collections/Experience'
+import { Education } from './collections/Education'
 
 import { Hero } from './globals/Hero'
 import { About } from './globals/About'
 import { Contact } from './globals/Contact'
 import { Footer } from './globals/Footer'
+import { Navigation } from './globals/Navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -27,8 +29,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Folders, Tags, Projects, Experience],
-  globals: [Hero, About, Contact, Footer],
+  collections: [Users, Media, Folders, Tags, Projects, Experience, Education],
+  globals: [Hero, About, Contact, Footer, Navigation],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -45,7 +47,5 @@ export default buildConfig({
     fallback: true,
     defaultLocale: 'en',
   },
-  cors: [
-    'http://localhost:5173', // Vite app URL
-  ],
+  cors: '*',
 })

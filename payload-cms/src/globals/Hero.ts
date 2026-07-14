@@ -1,19 +1,20 @@
 import type { GlobalConfig } from 'payload'
 
 export const Hero: GlobalConfig = {
-  slug: 'hero-section',
+  slug: 'hero',
+  label: 'Hero Section',
   access: {
-    read: () => true, // Allows public (unauthenticated) read access
+    read: () => true,
   },
   fields: [
     {
-      name: 'helloText',
+      name: 'greeting',
       type: 'text',
       required: true,
       defaultValue: 'Hello! I am',
     },
     {
-      name: 'developerName',
+      name: 'name',
       type: 'text',
       required: true,
       defaultValue: 'Maksudur Rahaman',
@@ -21,7 +22,8 @@ export const Hero: GlobalConfig = {
     {
       name: 'roles',
       type: 'array',
-      required: true,
+      label: 'Rotating Roles',
+      minRows: 1,
       fields: [
         {
           name: 'role',
@@ -31,19 +33,34 @@ export const Hero: GlobalConfig = {
       ],
     },
     {
-      name: 'heading',
+      name: 'headline',
       type: 'textarea',
       required: true,
+      defaultValue: 'I build secure, scalable web applications with modern frontend and backend architecture.',
     },
     {
       name: 'description',
       type: 'textarea',
       required: true,
+      defaultValue: 'I deliver production-ready apps using Next.js, Nest.js, Prisma, PostgreSQL, and Tailwind CSS, with a strong focus on RBAC, performance, and AI-enabled workflows.',
+    },
+    {
+      name: 'profileImage',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+    },
+    {
+      name: 'cvLink',
+      type: 'text',
+      label: 'Download CV Link',
+      required: true,
+      defaultValue: '/maksudur-rahaman.pdf',
     },
     {
       name: 'skills',
       type: 'array',
-      required: true,
+      label: 'Skills Icons',
       fields: [
         {
           name: 'name',
@@ -51,39 +68,32 @@ export const Hero: GlobalConfig = {
           required: true,
         },
         {
-          name: 'icon',
+          name: 'iconUrl',
           type: 'text',
           required: true,
           admin: {
-            description: 'SVG URL or base64 data string for the skill icon',
-          },
+            description: 'Can be a base64 string or an image URL (e.g., https://skillicons.dev/icons?i=react)',
+          }
         },
       ],
     },
     {
-      name: 'cvUrl',
-      type: 'text',
-      defaultValue: '/maksudur-rahaman.pdf',
-    },
-    {
-      name: 'imageLink',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'linkedinUrl',
-      type: 'text',
-      defaultValue: 'https://www.linkedin.com/in/maksudur-rahaman',
-    },
-    {
-      name: 'githubUrl',
-      type: 'text',
-      defaultValue: 'https://github.com/Maksudur7',
-    },
-    {
-      name: 'email',
-      type: 'text',
-      defaultValue: 'maksudurrahamanmishu7@gmail.com',
+      name: 'socialLinks',
+      type: 'array',
+      label: 'Social Media Links',
+      fields: [
+        {
+          name: 'platform',
+          type: 'select',
+          options: ['LinkedIn', 'GitHub', 'Email'],
+          required: true,
+        },
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+        },
+      ],
     },
   ],
 }

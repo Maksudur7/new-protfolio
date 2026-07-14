@@ -6,6 +6,9 @@ export const Folders: CollectionConfig = {
     useAsTitle: 'name',
   },
   folders: true,
+  access: {
+    read: () => true,
+  },
   fields: [
     {
       name: 'name',
