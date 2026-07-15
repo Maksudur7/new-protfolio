@@ -48,5 +48,6 @@ export default buildConfig({
   },
   cors: [
     'http://localhost:5173', // Vite app URL
+    'https://new-protfolio-jade.vercel.app', // Frontend Live Link
   ],
 })
