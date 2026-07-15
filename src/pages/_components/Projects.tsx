@@ -136,7 +136,7 @@ const resolveImageUrl = (link: string): string => {
 };
 
 const fetchProjectsFromCMS = async (): Promise<ProjectItem[]> => {
-  const response = await fetch(`${CMS_URL}/api/projects?limit=100&sort=featuredOrder`);
+  const response = await fetch(`${CMS_URL}/api/projects?limit=100&sort=featuredOrder&t=${Date.now()}`);
   if (!response.ok) {
     throw new Error("Failed to fetch projects");
   }
@@ -194,7 +194,7 @@ export default function Projects() {
     queryKey: ["projects"],
     queryFn: fetchProjectsFromCMS,
     retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    staleTime: 0, // refetch immediately to show CMS updates
   });
 
   // Fallback to hardcoded mock projects if CMS is down or has no data

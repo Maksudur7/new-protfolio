@@ -65,7 +65,7 @@ const DEFAULT_EXPERIENCES: ExperienceItem[] = [
 const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
 
 const fetchExperiencesFromCMS = async (): Promise<ExperienceItem[]> => {
-  const response = await fetch(`${CMS_URL}/api/experiences?limit=100&sort=order`);
+  const response = await fetch(`${CMS_URL}/api/experiences?limit=100&sort=order&t=${Date.now()}`);
   if (!response.ok) {
     throw new Error("Failed to fetch experiences");
   }
@@ -125,7 +125,7 @@ export default function Experience() {
     queryKey: ["experiences"],
     queryFn: fetchExperiencesFromCMS,
     retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 minutes cache
+    staleTime: 0, // refetch immediately to show CMS updates
   });
 
   // Fallback to hardcoded mock experiences if CMS is down or has no data
