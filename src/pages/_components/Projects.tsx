@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import {
   Calendar,
   Code,
@@ -13,6 +12,7 @@ import {
 
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
+import { useCollection } from "@/lib/api.ts";
 
 interface ProjectItem {
   id: number;
@@ -32,138 +32,13 @@ interface ProjectItem {
   featuredOrder?: number;
 }
 
-const DEFAULT_PROJECTS: ProjectItem[] = [
-  {
-    id: 1,
-    title: "NGV - Video Streaming Platform",
-    description:
-      "A modern, fully dynamic video streaming platform with 11+ responsive pages, advanced filtering, and a comprehensive admin dashboard. Features high-performance media listing, user watch history, and rental/subscription flows.",
-    technologies: [
-      "Next.js 16",
-      "React 19",
-      "TypeScript",
-      "Tailwind CSS",
-      "Better Auth",
-      "Radix UI",
-    ],
-    liveUrl: "https://ngv-black.vercel.app",
-    githubUrl: "https://github.com/Maksudur7/assinment5",
-    category: "Full-Stack App",
-    imageLink: "https://i.ibb.co.com/6JV74646/ngv.png",
-    featured: true,
-    featuredOrder: 1,
-    stats: {
-      stars: 45,
-      users: 120,
-      completion: 85,
-    },
-  },
-  {
-    id: 2,
-    title: "Student Hub Platform",
-    description:
-      "A comprehensive web platform for students featuring user authentication, content management, and feedback systems. Built with modern MERN stack technologies for seamless user experience and scalable architecture.",
-    technologies: [
-      "React.js",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-      "Tailwind CSS",
-    ],
-    liveUrl: "https://studyhub-f26cc.web.app",
-    githubUrl: "https://github.com/Maksudur7/Study-Hub",
-    category: "Full-Stack Web App",
-    imageLink: "https://i.ibb.co.com/nq8rnJmr/studenthub.png",
-    featured: true,
-    featuredOrder: 1,
-    stats: {
-      stars: 24,
-      users: 150,
-      completion: 100,
-    },
-  },
-  {
-    id: 3,
-    title: "MediStore - Premium Online Pharmacy",
-    description:
-      "A sophisticated healthcare e-commerce platform built with Next.js 15. Features a premium dark-themed UI, real-time cart management, and a multi-step checkout process. Optimized for lightning-fast medicine browsing and secure OTC purchases.",
-    technologies: [
-      "Next.js 15",
-      "TypeScript",
-      "Tailwind CSS",
-      "Framer Motion",
-      "Context API",
-    ],
-    liveUrl: "https://medistore-woad.vercel.app",
-    githubUrl: "https://github.com/Maksudur7/MediStore-Frontend",
-    category: "E-Commerce",
-    imageLink: "https://i.ibb.co.com/k2B4h3Y6/madistore.png",
-    featured: false,
-    featuredOrder: 3,
-    stats: {
-      stars: 12,
-      users: 50,
-      completion: 100,
-    },
-  },
-  {
-    id: 4,
-    title: "ConnectMe VPN - Reseller Panel",
-    description:
-      "A professional VPN management and reseller platform. It provides real-time user management, bandwidth monitoring, and a seamless dashboard for administrators and sub-resellers to manage connections efficiently.",
-    technologies: ["Node.js", "Express.js", "React", "MongoDB", "REST API"],
-    liveUrl: "https://reseller.cntbdvpn.win",
-    githubUrl: "https://github.com/Maksudur7",
-    category: "Admin Panel",
-    imageLink: "https://i.ibb.co.com/tp4nhNbj/connect-me.png",
-    featured: false,
-    stats: {
-      stars: 15,
-      users: 450,
-      completion: 100,
-    },
-  },
-];
-
-
-const CMS_URL = import.meta.env.VITE_CMS_URL || "https://protfolio-payload.vercel.app";
+const CMS_URL = import.meta.env.VITE_CMS_URL || "http://localhost:3000";
 
 /** Resolve imageLink: if it's a relative path, prefix with CMS base URL */
 const resolveImageUrl = (link: string): string => {
   if (!link) return "";
   if (link.startsWith("http://") || link.startsWith("https://")) return link;
   return `${CMS_URL}${link.startsWith("/") ? "" : "/"}${link}`;
-};
-
-const fetchProjectsFromCMS = async (): Promise<ProjectItem[]> => {
-  const response = await fetch(`${CMS_URL}/api/projects?limit=100&sort=featuredOrder&t=${Date.now()}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch projects");
-  }
-  const data = await response.json();
-
-  // Transform Payload CMS schema to fit frontend schema
-  return (data.docs || []).map((doc: any) => ({
-    id: doc.id,
-    title: doc.title,
-    description: doc.description,
-    category: doc.category,
-    imageLink: resolveImageUrl(doc.imageLink || ""),
-    liveUrl: doc.liveUrl || undefined,
-    githubUrl: doc.githubUrl || undefined,
-    featured: doc.featured || false,
-    featuredOrder: doc.featuredOrder ?? undefined,
-    technologies: (doc.technologies || []).map((tech: any) =>
-      typeof tech === "string" ? tech : tech.name
-    ),
-    stats: doc.stats
-      ? {
-        stars: doc.stats.stars || undefined,
-        users: doc.stats.users || undefined,
-        completion: doc.stats.completion || undefined,
-      }
-      : undefined,
-  }));
 };
 
 /** Loading skeleton card */
@@ -187,19 +62,32 @@ export default function Projects() {
   const [projectPage, setProjectPage] = useState(1);
 
   const {
-    data: cmsProjects,
+    data: cmsProjectsData,
     isLoading,
     isError,
-  } = useQuery<ProjectItem[]>({
-    queryKey: ["projects"],
-    queryFn: fetchProjectsFromCMS,
-    retry: 1,
-    staleTime: 0, // refetch immediately to show CMS updates
-  });
+  } = useCollection("projects", "limit=100&sort=featuredOrder");
 
-  // Fallback to hardcoded mock projects if CMS is down or has no data
-  const projects =
-    cmsProjects && cmsProjects.length > 0 ? cmsProjects : DEFAULT_PROJECTS;
+  const projects: ProjectItem[] = (cmsProjectsData?.docs || []).map((doc: any) => ({
+    id: doc.id,
+    title: doc.title,
+    description: doc.description,
+    category: doc.category,
+    imageLink: resolveImageUrl(doc.imageLink || ""),
+    liveUrl: doc.liveUrl || undefined,
+    githubUrl: doc.githubUrl || undefined,
+    featured: doc.featured || false,
+    featuredOrder: doc.featuredOrder ?? undefined,
+    technologies: (doc.technologies || []).map((tech: any) =>
+      typeof tech === "string" ? tech : tech.name
+    ),
+    stats: doc.stats
+      ? {
+        stars: doc.stats.stars || undefined,
+        users: doc.stats.users || undefined,
+        completion: doc.stats.completion || undefined,
+      }
+      : undefined,
+  }));
 
   const featuredProjects = projects
     .filter((p) => p.featured)
@@ -250,12 +138,12 @@ export default function Projects() {
             </div>
           )}
           {isError && (
-            <div className="mt-3 inline-flex items-center gap-2 text-xs text-yellow-500/80">
-              <span className="w-2 h-2 rounded-full bg-yellow-500/80 inline-block" />
-              <span>Showing cached data — CMS offline</span>
+            <div className="mt-3 inline-flex items-center gap-2 text-xs text-red-500/80">
+              <span className="w-2 h-2 rounded-full bg-red-500/80 inline-block" />
+              <span>Failed to load from CMS</span>
             </div>
           )}
-          {!isLoading && !isError && cmsProjects && cmsProjects.length > 0 && (
+          {!isLoading && !isError && projects.length > 0 && (
             <div className="mt-3 inline-flex items-center gap-2 text-xs text-emerald-500/80">
               <span className="w-2 h-2 rounded-full bg-emerald-500/80 inline-block" />
               <span>Live from CMS</span>
@@ -451,7 +339,7 @@ export default function Projects() {
         </div>}
 
         {/* Other Projects - Grid Layout */}
-        <div className="space-y-8">
+        {!isLoading && <div className="space-y-8">
           <div className="text-center">
             <h3 className="text-2xl md:text-3xl font-bold text-foreground">
               More Projects
@@ -574,7 +462,7 @@ export default function Projects() {
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col gap-4 items-center justify-between sm:flex-row sm:gap-0">
+          {totalProjectPages > 1 && <div className="mt-8 flex flex-col gap-4 items-center justify-between sm:flex-row sm:gap-0">
             <div className="text-sm text-gray-400">
               Page {projectPage} of {totalProjectPages}
             </div>
@@ -596,8 +484,8 @@ export default function Projects() {
                 Next
               </Button>
             </div>
-          </div>
-        </div>
+          </div>}
+        </div>}
       </div>
     </section>
   );
