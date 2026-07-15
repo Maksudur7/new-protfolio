@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:3000/api";
-
+const CMS_URL = import.meta.env.VITE_CMS_URL || "http://localhost:3000";
+const API_URL = `${CMS_URL}/api`;
 export async function fetchGlobal(slug: string) {
   const res = await fetch(`${API_URL}/globals/${slug}`);
   if (!res.ok) {
